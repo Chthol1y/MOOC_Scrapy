@@ -17,8 +17,8 @@ NEWSPIDER_MODULE = 'MOOC.spiders'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-LOG_LEVEL = "DEBUG"
-LOG_FILE = "./log.log"
+# LOG_LEVEL = "DEBUG"
+# LOG_FILE = "./log.log"
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
 
@@ -31,7 +31,7 @@ DOWNLOAD_DELAY = 3
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = False
+COOKIES_ENABLED = True
 COOKIES_DEBUG = True
 # HTTPERROR_ALLOWED_CODES = [400]
 

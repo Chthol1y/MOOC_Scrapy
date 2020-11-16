@@ -4,14 +4,11 @@ import json
 import datetime
 from MOOC.items import classItem
 
-with open('cookie.txt', 'r', encoding='utf') as f:
-    cookie = f.read()
-
 
 def set_request_body(classname=None, page='1'):
     return {
-        'mocCourseQueryVo': '{{"keyword":{arg1},"pageIndex":{arg2},"highlight":true,"orderBy":0,"stats":30,"pageSize":20}}'.format(
-            arg1=classname, arg2=page)
+        'mocCourseQueryVo':
+            '{{"keyword":{arg1},"pageIndex":{arg2},"highlight":true,"orderBy":0,"stats":30,"pageSize":20}}'.format(arg1=classname, arg2=page)
     }
 
 
@@ -25,13 +22,15 @@ class moocSpiderSpider(scrapy.Spider):
         # self.form_data =
         # self.classname = classname
         # self.request_body = {"keyword": "高等数学","pageIndex":1,"highlight":'true',"orderBy":0,"stats":30,"pageSize":20}
+        with open('cookie.txt', 'r', encoding='utf') as f:
+            self.cookie = f.read()
         self.classname = classname
         self.request_body = set_request_body(classname=classname, page='1')
         self.request_header = {
             # 'Host': 'www.icourse163.org',
             'Connection': 'keep-alive',
             # 'Content-Length': '112',
-            'edu-script-token': re.findall("NTESSTUDYSI=(.*?);", cookie)[0],
+            'edu-script-token': re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0],
             # TODO: Download Middleware process_response() 实现随机User-Agent
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63',
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -43,18 +42,18 @@ class moocSpiderSpider(scrapy.Spider):
             'Referer': 'https://www.icourse163.org/search.htm?search=' + classname + '#/',
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-US;q=0.7',
-            'Cookie': cookie,
+            'Cookie': self.cookie,
         }
         self.search_ajax = 'https://www.icourse163.org/web/j/mocSearchBean.searchCourse.rpc?csrfKey=' + \
-                           re.findall("NTESSTUDYSI=(.*?);", cookie)[0]
+                           re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0]
         self.search_url = 'https://www.icourse163.org/search.htm?search={class_name}#/'.format(class_name=classname)
 
     def start_requests(self):
         # print(re.findall("NTESSTUDYSI=(.*?);", cookie)[0])
         # print(self.request_header)
         # print(self.request_body)
-        # yield scrapy.Request(url=self.search_ajax, method="POST", headers=self.request_header, body=json.dumps(self.request_body),
-        #                      callback=self.parse)
+        # yield scrapy.Request(url=self.search_ajax, method="POST", headers=self.request_header,
+        # body=json.dumps(self.request_body),callback=self.parse)
         yield scrapy.FormRequest(url=self.search_ajax, method='POST', headers=self.request_header,
                                  formdata=self.request_body,
                                  callback=self.parse)
@@ -103,22 +102,6 @@ class moocSpiderSpider(scrapy.Spider):
             item['teachers'] = teachers
             item['courseURL'] = courseURL
             yield item
-            # print(name, school, subscribe_num, startTime, endTime, teachers, courseURL)
-        # json_list = info_dict['result']['list']
-        # name = json_list[0]['highlightName']
-        # name = re.sub(r'({##)|(##})', '', name)
-        # school = json_list[0]['highlightUniversity']
-        # subscribe_num = json_list[0]['mocCourseCard']['mocCourseCardDto']['termPanel']['enrollCount']
-        # endTime = json_list[0]['mocCourseCard']['mocCourseCardDto']['termPanel']['endTime']
-        # startTime = json_list[0]['mocCourseCard']['mocCourseCardDto']['termPanel']['startTime']
-        # endTime = datetime.datetime.fromtimestamp(endTime / 1000)
-        # startTime = datetime.datetime.fromtimestamp(startTime / 1000)
-        # teachers = json_list[0]['mocCourseCard']['highlightTeacherNames']
-        # courseId = json_list[0]['courseId']
-
-        # school_shortName = json_list[0]['mocCourseCard']['mocCourseCardDto']['schoolPanel']['shortName']
-        # courseURL = 'https://www.icourse163.org/course/{}-{}'.format(school_shortName, courseId)
-        # print(name, school, subscribe_num, startTime, endTime, teachers, courseURL)
 
         if nextPage <= totalPageCount and flag == 1:
             # print('下一页： ', nextPage)
