@@ -20,3 +20,8 @@ class classItem(scrapy.Item):
     startTime = scrapy.Field()
     teachers = scrapy.Field()
     courseURL = scrapy.Field()
+
+
+class subjectItem(scrapy.Item):
+    subject_name = scrapy.Field()
+    subject_id = scrapy.Field()

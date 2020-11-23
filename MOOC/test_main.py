@@ -7,7 +7,6 @@
 import scrapy
 from scrapy.cmdline import execute
 
-execute(['scrapy', 'crawl', 'downloadSpider', '-a', 'url=https://www.icourse163.org/course/BIT-268001'])
-# print('!!!!!!!!!!!!')
-# https://www.icourse163.org/course/BIT-268001
-# https://www.icourse163.org/learn/BIT-268001?tid=1461953449
+# execute(['scrapy', 'crawl', 'downloadSpider', '-a', 'url=https://www.icourse163.org/course/BIT-268001'])
+execute('scrapy crawl mooc_info -o total_cs_class.csv'.split())
+# execute('scrapy crawl mooc_subject -o subject_id.csv'.split())

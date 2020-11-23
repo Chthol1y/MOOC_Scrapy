@@ -2,34 +2,38 @@ import scrapy
 import re
 import json
 import datetime
+import pandas as pd
 from MOOC.items import classItem
 
 
-def set_request_body(classname=None, page='1'):
+def set_request_body(categoryChannelId=3002, page='1'):
+    # categoryChannelId=3002 计算机学科
     return {
         'mocCourseQueryVo':
-            '{{"keyword":{arg1},"pageIndex":{arg2},"highlight":true,"orderBy":0,"stats":30,"pageSize":20}}'.format(arg1=classname, arg2=page)
+            '{{"categoryId":-1,"categoryChannelId":{arg1},"orderBy":0,"stats":30,"pageIndex":{arg2},"pageSize":20}}'.format(
+                arg1=categoryChannelId, arg2=page)
     }
 
 
-class moocSpiderSpider(scrapy.Spider):
-    name = 'moocSpiderSpider'
+class MoocInfoSpider(scrapy.Spider):
+    name = 'mooc_info'
     allowed_domains = ['www.icourse163.org']
-    # start_urls = ['http://www.icourse163.org/']
 
     custom_settings = {
         'FEED_EXPORT_FIELDS': ['name', 'school', 'subscribe_num', 'endTime', 'startTime', 'teachers', 'courseURL']
     }
 
-    def __init__(self, classname=None):
-        super(moocSpiderSpider, self).__init__()
-        # self.form_data =
-        # self.classname = classname
-        # self.request_body = {"keyword": "高等数学","pageIndex":1,"highlight":'true',"orderBy":0,"stats":30,"pageSize":20}
+    def __init__(self, channelId=3002):
+        super(MoocInfoSpider, self).__init__()
+        # self.request_body={"categoryId":-1,"categoryChannelId":3002,"orderBy":0,"stats":30,"pageIndex":2,"pageSize":20}
         with open('cookie.txt', 'r', encoding='utf') as f:
             self.cookie = f.read()
-        self.classname = classname
-        self.request_body = set_request_body(classname=classname, page='1')
+        # subject_dict = pd.read_csv('subject_id.csv').set_index('subject_name')['subject_id'].to_dict()
+        self.channelId = channelId     # list(subject_dict.values())
+        self.channelCount = 0
+        # 计算机：3002，外语:2002，理学：2003，工学：3003，经济管理：3004，心理学：3007，文史哲：3005，艺术设计：3006，医药卫生：3008，教育教学：3010，法学：3009，
+        # 农林园艺：3011，
+        self.request_body = set_request_body(categoryChannelId=self.channelId, page='1')
         self.request_header = {
             # 'Host': 'www.icourse163.org',
             'Connection': 'keep-alive',
@@ -43,26 +47,20 @@ class moocSpiderSpider(scrapy.Spider):
             'Sec-Fetch-Site': 'same-origin',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Dest': ' empty',
-            'Referer': 'https://www.icourse163.org/search.htm?search=' + classname + '#/',
+            'Referer': 'https://www.icourse163.org/channel/' + str(self.channelId) + '.htm',
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-US;q=0.7',
             'Cookie': self.cookie,
         }
-        self.search_ajax = 'https://www.icourse163.org/web/j/mocSearchBean.searchCourse.rpc?csrfKey=' + \
+        self.search_ajax = 'https://www.icourse163.org/web/j/mocSearchBean.searchCourseCardByChannelAndCategoryId.rpc?csrfKey=' + \
                            re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0]
-        self.search_url = 'https://www.icourse163.org/search.htm?search={class_name}#/'.format(class_name=classname)
 
     def start_requests(self):
-        # print(re.findall("NTESSTUDYSI=(.*?);", cookie)[0])
-        # print(self.request_header)
-        # print(self.request_body)
-        # yield scrapy.Request(url=self.search_ajax, method="POST", headers=self.request_header,
-        # body=json.dumps(self.request_body),callback=self.parse)
         yield scrapy.FormRequest(url=self.search_ajax, method='POST', headers=self.request_header,
-                                 formdata=self.request_body,
-                                 callback=self.parse)
+                                 formdata=self.request_body, callback=self.parse)
 
     def parse(self, response, **kwargs):
+        # print(response.text)
         info_dict = json.loads(response.text)
         # print(info_dict)
         # *****************************当前页数信息*****************************
@@ -70,31 +68,26 @@ class moocSpiderSpider(scrapy.Spider):
         pageIndex = info_dict['result']['query']['pageIndex']
         print("Current Page: ", pageIndex)
         pageSize = info_dict['result']['query']['pageSize']
+        totalCount = info_dict['result']['query']['totleCount']
         totalPageCount = info_dict['result']['query']['totlePageCount']
         nextPage = pageIndex + 1
-        flag = 1
         # ******************************页面内容*******************************
         # 课程名称  学校  参加人数    开课时间/结束时间    教师  链接
-        for num in range(0, pageSize):
+        for num in range(0, len(info_dict['result']['list'])):
             json_list = info_dict['result']['list'][num]
-            if json_list['mocCourseCard'] is None:
+            if json_list['mocCourseBaseCardVo'] is None:
                 continue
-            name = re.sub(r'({##)|(##})', '', json_list['highlightName'])
-            if not re.findall(self.classname, name, flags=re.IGNORECASE):
-                print('已无相关课程')
-                flag = 0
-                break
-
-            school = json_list['highlightUniversity']
-            subscribe_num = json_list['mocCourseCard']['mocCourseCardDto']['termPanel']['enrollCount']
-            endTime = json_list['mocCourseCard']['mocCourseCardDto']['termPanel']['endTime']
-            startTime = json_list['mocCourseCard']['mocCourseCardDto']['termPanel']['startTime']
+            name = json_list['mocCourseBaseCardVo']['name']
+            school = json_list['mocCourseBaseCardVo']['schoolName']
+            subscribe_num = json_list['mocCourseBaseCardVo']['enrollCount']
+            endTime = json_list['mocCourseBaseCardVo']['endTime']
+            startTime = json_list['mocCourseBaseCardVo']['startTime']
             endTime = datetime.datetime.fromtimestamp(endTime / 1000)
             startTime = datetime.datetime.fromtimestamp(startTime / 1000)
-            teachers = json_list['mocCourseCard']['highlightTeacherNames']
+            teachers = json_list['mocCourseBaseCardVo']['teacherName']
             # 通过courseId 和 生成课程页面URL
-            courseId = json_list['courseId']
-            school_shortName = json_list['mocCourseCard']['mocCourseCardDto']['schoolPanel']['shortName']
+            courseId = json_list['id']
+            school_shortName = json_list['mocCourseBaseCardVo']['schoolSN']
             courseURL = 'https://www.icourse163.org/course/{}-{}'.format(school_shortName, courseId)
             # 传输至 classItem
             item = classItem()
@@ -106,9 +99,8 @@ class moocSpiderSpider(scrapy.Spider):
             item['teachers'] = teachers
             item['courseURL'] = courseURL
             yield item
-
-        if nextPage <= totalPageCount and flag == 1:
+        if nextPage <= totalPageCount:
             # print('下一页： ', nextPage)
             yield scrapy.FormRequest(url=self.search_ajax, method='POST', headers=self.request_header,
-                                     formdata=set_request_body(classname=self.classname, page=nextPage),
+                                     formdata=set_request_body(categoryChannelId=self.channelId, page=nextPage),
                                      callback=self.parse)
