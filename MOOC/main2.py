@@ -17,9 +17,11 @@ def get_all_subject_info():
     channelCount = 0
 
     while channelCount < len(channelId_list):
-        print('爬取 '+channelName_list[channelCount]+' 课程信息')
-        os.system('scrapy crawl mooc_info -o all_class_{arg1}.csv -a channelId={arg2}'.format(
-            arg1=channelName_list[channelCount], arg2=channelId_list[channelCount])
+        print('爬取 ' + channelName_list[channelCount] + ' 课程信息')
+        os.system(
+            'scrapy crawl mooc_info -o ../cache/all_class_{arg1}.csv -a channelId={arg2} -a channelName={arg3}'.format(
+                arg1=channelName_list[channelCount], arg2=channelId_list[channelCount],
+                arg3=channelName_list[channelCount])
         )
         channelCount += 1
 

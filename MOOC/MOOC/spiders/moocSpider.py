@@ -8,21 +8,23 @@ from MOOC.items import classItem
 def set_request_body(classname=None, page='1'):
     return {
         'mocCourseQueryVo':
-            '{{"keyword":{arg1},"pageIndex":{arg2},"highlight":true,"orderBy":0,"stats":30,"pageSize":20}}'.format(arg1=classname, arg2=page)
+            '{{"keyword":{arg1},"pageIndex":{arg2},"highlight":true,"orderBy":0,"stats":30,"pageSize":20}}'.format(
+                arg1=classname, arg2=page)
     }
 
 
-class moocSpiderSpider(scrapy.Spider):
-    name = 'moocSpiderSpider'
+class moocSpider(scrapy.Spider):
+    name = 'moocSpider'
     allowed_domains = ['www.icourse163.org']
     # start_urls = ['http://www.icourse163.org/']
 
     custom_settings = {
-        'FEED_EXPORT_FIELDS': ['name', 'school', 'subscribe_num', 'endTime', 'startTime', 'teachers', 'courseURL']
+        'FEED_EXPORT_FIELDS': ['name', 'school', 'subscribe_num', 'endTime', 'startTime', 'teachers', 'courseURL'],
+        'ITEM_PIPELINES': {'MOOC.pipelines.Mysql_Pipeline': 400}
     }
 
     def __init__(self, classname=None):
-        super(moocSpiderSpider, self).__init__()
+        super(moocSpider, self).__init__()
         # self.form_data =
         # self.classname = classname
         # self.request_body = {"keyword": "高等数学","pageIndex":1,"highlight":'true',"orderBy":0,"stats":30,"pageSize":20}
@@ -36,7 +38,7 @@ class moocSpiderSpider(scrapy.Spider):
             # 'Content-Length': '112',
             'edu-script-token': re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0],
             # TODO: Download Middleware process_response() 实现随机User-Agent
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36 Edg/87.0.664.41',
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': '*/*',
             'Origin': 'https://www.icourse163.org',
@@ -46,19 +48,22 @@ class moocSpiderSpider(scrapy.Spider):
             'Referer': 'https://www.icourse163.org/search.htm?search=' + classname + '#/',
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-US;q=0.7',
-            'Cookie': self.cookie,
+            'cookie': self.cookie,
         }
         self.search_ajax = 'https://www.icourse163.org/web/j/mocSearchBean.searchCourse.rpc?csrfKey=' + \
                            re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0]
         self.search_url = 'https://www.icourse163.org/search.htm?search={class_name}#/'.format(class_name=classname)
 
     def start_requests(self):
+        print(self.cookie)
         # print(re.findall("NTESSTUDYSI=(.*?);", cookie)[0])
         # print(self.request_header)
         # print(self.request_body)
         # yield scrapy.Request(url=self.search_ajax, method="POST", headers=self.request_header,
         # body=json.dumps(self.request_body),callback=self.parse)
         yield scrapy.FormRequest(url=self.search_ajax, method='POST', headers=self.request_header,
+                                 # cookies={'name': 'test', 'value': self.cookie},
+                                 meta={'dont_merge_cookies': True},
                                  formdata=self.request_body,
                                  callback=self.parse)
 
@@ -87,6 +92,7 @@ class moocSpiderSpider(scrapy.Spider):
 
             school = json_list['highlightUniversity']
             subscribe_num = json_list['mocCourseCard']['mocCourseCardDto']['termPanel']['enrollCount']
+
             endTime = json_list['mocCourseCard']['mocCourseCardDto']['termPanel']['endTime']
             startTime = json_list['mocCourseCard']['mocCourseCardDto']['termPanel']['startTime']
             endTime = datetime.datetime.fromtimestamp(endTime / 1000)
@@ -110,5 +116,6 @@ class moocSpiderSpider(scrapy.Spider):
         if nextPage <= totalPageCount and flag == 1:
             # print('下一页： ', nextPage)
             yield scrapy.FormRequest(url=self.search_ajax, method='POST', headers=self.request_header,
+                                     meta={'dont_merge_cookies': True},
                                      formdata=set_request_body(classname=self.classname, page=nextPage),
                                      callback=self.parse)

@@ -19,7 +19,7 @@ def search_course(file_name, file_type):
     if os.path.exists(filename + filetype):
         os.rename(file_name + file_type, file_name + currentTime + file_type)
 
-    os.system('scrapy crawl moocSpiderSpider -a classname={0} -o {1}'.format(course_name, filename + filetype))
+    os.system('scrapy crawl moocSpider -a classname={0} -o {1}'.format(course_name, filename + filetype))
     # execute('scrapy crawl moocSpiderSpider -a classname=高等数学'.split())
 
 
@@ -51,7 +51,7 @@ def display_result(file_name, file_type):
 
 
 if __name__ == '__main__':
-    course_name = input("请输入要查询的课程：")
+    course_name = input("请输入要查询的课程关键词：")
     filename = 'course_information'
     filetype = '.csv'
 
