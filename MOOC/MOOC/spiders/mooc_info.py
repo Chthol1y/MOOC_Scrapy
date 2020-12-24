@@ -25,8 +25,8 @@ class MoocInfoSpider(scrapy.Spider):
     allowed_domains = ['www.icourse163.org']
 
     custom_settings = {
-        'FEED_EXPORT_FIELDS': ['name', 'school', 'subscribe_num', 'endTime', 'startTime', 'teachers', 'courseURL',
-                               'subject_type'],
+        'FEED_EXPORT_FIELDS': ['name', 'school', 'subscribeNum', 'endTime', 'startTime', 'teachers', 'courseURL',
+                               'subjectType', 'classScore', 'scoreCount'],
         'ITEM_PIPELINES': {'MOOC.pipelines.Mysql_Pipeline': 400},
         'DOWNLOADER_MIDDLEWARES': {
             'MOOC.middlewares.RandomUserAgentMiddleware': 543,
@@ -63,8 +63,22 @@ class MoocInfoSpider(scrapy.Spider):
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-US;q=0.7',
             'cookie': self.cookie,
         }
+        self.request_header_classScore = {
+            'Connection': 'keep-alive',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': '*/*',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': ' empty',
+            'Referer': '',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-US;q=0.7',
+            'cookie': self.cookie,
+        }
         self.search_ajax = 'https://www.icourse163.org/web/j/mocSearchBean.searchCourseCardByChannelAndCategoryId.rpc?csrfKey=' + \
                            re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0]
+        self.search_ajax_classScore = 'https://www.icourse163.org/web/j/mocCourseV2RpcBean.getEvaluateAvgAndCount.rpc?csrfKey=' + \
+                                      re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0]
 
     def start_requests(self):
         # 向接口发送指定post请求
@@ -81,7 +95,7 @@ class MoocInfoSpider(scrapy.Spider):
         # *****************************当前页数信息*****************************
         # 当前页数：pageIndex    单页课程数量：pageSize     总页数：totalPageCount
         pageIndex = info_dict['result']['query']['pageIndex']
-        print("Current Page: ", pageIndex)
+        # print("Current Page: ", pageIndex)
         pageSize = info_dict['result']['query']['pageSize']
         totalCount = info_dict['result']['query']['totleCount']
         totalPageCount = info_dict['result']['query']['totlePageCount']
@@ -112,16 +126,41 @@ class MoocInfoSpider(scrapy.Spider):
             item = classItem()
             item['name'] = name
             item['school'] = school
-            item['subscribe_num'] = subscribe_num
+            item['subscribeNum'] = subscribe_num
             item['endTime'] = endTime
             item['startTime'] = startTime
             item['teachers'] = teachers
             item['courseURL'] = courseURL
-            item['subject_type'] = self.channelName
-            yield item
+            item['subjectType'] = self.channelName
+            # yield item
+            # 二级处理：从另一个接口获取课程评分数据
+            self.request_header_classScore['Referer'] = courseURL
+            form_data = {'courseId': str(courseId)}
+            yield scrapy.FormRequest(url=self.search_ajax_classScore, method='POST',
+                                     headers=self.request_header_classScore,
+                                     meta={'dont_merge_cookies': True, 'item': item},
+                                     formdata=form_data, callback=self.parse_Score)
         if nextPage <= totalPageCount:
             # 通过修改request body内页面数据，实现翻页效果
             yield scrapy.FormRequest(url=self.search_ajax, method='POST', headers=self.request_header,
                                      meta={'dont_merge_cookies': True},
                                      formdata=set_request_body(categoryChannelId=self.channelId, page=nextPage),
                                      callback=self.parse)
+
+    def parse_Score(self, response):
+        """
+        使用课程得分信息接口，POST课程信息获得课程评分、评分人数数据
+        :param response:上一级FormRequest POST结果
+        """
+        score_info_dict = json.loads(response.text)
+        item = response.meta['item']
+        print(score_info_dict['result'])
+        if score_info_dict['result'] is not None:
+            classScore = score_info_dict['result']['avgMark']
+            scoreCount = score_info_dict['result']['evaluateCount']
+            item['classScore'] = classScore
+            item['scoreCount'] = scoreCount
+        else:
+            item['classScore'] = 0
+            item['scoreCount'] = 0
+        yield item

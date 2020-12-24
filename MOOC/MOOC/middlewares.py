@@ -144,4 +144,3 @@ class RandomUserAgentMiddleware:
 
     def process_request(self, request, spider):
         request.headers['User-Agent'] = random.choice(self.user_agents)
-        print(request.headers['User-Agent'])

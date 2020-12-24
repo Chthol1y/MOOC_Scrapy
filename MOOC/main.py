@@ -30,8 +30,8 @@ def display_result(file_name, file_type):
     search_result = search_result.rename(
         dict(zip(np.arange(0, search_result.shape[0]), np.arange(1, search_result.shape[0] + 1))))
     # 按照参加人数排序
-    search_result['subscribe_num'] = search_result['subscribe_num'].apply(int)
-    search_result = search_result.sort_values(by='subscribe_num', ascending=False)
+    search_result['subscribeNum'] = search_result['subscribeNum'].apply(int)
+    search_result = search_result.sort_values(by='subscribeNum', ascending=False)
     search_result = search_result.reset_index()
     search_result.index += 1
     # 转换为 PrettyTable 表格数据
@@ -45,7 +45,7 @@ def display_result(file_name, file_type):
     for i in np.arange(1, search_result.shape[0] + 1):
         table.add_row(
             ['  ', i, search_result.loc[i]['name'], search_result.loc[i]['school'],
-             search_result.loc[i]['subscribe_num'],
+             search_result.loc[i]['subscribeNum'],
              search_result.loc[i]['endTime'], search_result.loc[i]['startTime'], search_result.loc[i]['teachers'],
              search_result.loc[i]['courseURL']])
     # 输出构造完毕的table

@@ -16,12 +16,14 @@ class classItem(scrapy.Item):
     table = 'class_info'
     name = scrapy.Field()
     school = scrapy.Field()
-    subscribe_num = scrapy.Field()
+    subscribeNum = scrapy.Field()
     endTime = scrapy.Field()
     startTime = scrapy.Field()
     teachers = scrapy.Field()
     courseURL = scrapy.Field()
-    subject_type = scrapy.Field()
+    subjectType = scrapy.Field()
+    classScore = scrapy.Field()
+    scoreCount = scrapy.Field()
 
 
 class subjectItem(scrapy.Item):

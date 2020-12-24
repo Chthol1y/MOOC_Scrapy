@@ -26,7 +26,7 @@ class moocSpider(scrapy.Spider):
 
     # 自定义scrapy settings内容
     custom_settings = {
-        'FEED_EXPORT_FIELDS': ['name', 'school', 'subscribe_num', 'endTime', 'startTime', 'teachers', 'courseURL'],
+        'FEED_EXPORT_FIELDS': ['name', 'school', 'subscribeNum', 'endTime', 'startTime', 'teachers', 'courseURL'],
         'DOWNLOADER_MIDDLEWARES': {
             'MOOC.middlewares.RandomUserAgentMiddleware': 543,
         }
@@ -113,7 +113,7 @@ class moocSpider(scrapy.Spider):
             item = classItem()
             item['name'] = name
             item['school'] = school
-            item['subscribe_num'] = subscribe_num
+            item['subscribeNum'] = subscribe_num
             item['endTime'] = endTime
             item['startTime'] = startTime
             item['teachers'] = teachers
