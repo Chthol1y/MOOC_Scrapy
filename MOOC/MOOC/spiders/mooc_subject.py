@@ -4,6 +4,9 @@ from MOOC.items import subjectItem
 
 
 class MoocSubjectSpider(scrapy.Spider):
+    """
+    遍历 MOOC学科子频道，收集所有学科频道对应URL
+    """
     name = 'mooc_subject'
     allowed_domains = ['www.icourse163.org']
 
@@ -19,11 +22,15 @@ class MoocSubjectSpider(scrapy.Spider):
         'DEFAULT_REQUEST_HEADERS': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36 Edg/86.0.622.58',
         },
-        'FEED_EXPORT_FIELDS': ['subject_id', 'subject_name']
+        'FEED_EXPORT_FIELDS': ['subject_id', 'subject_name'],
+        'DOWNLOADER_MIDDLEWARES': {
+            'MOOC.middlewares.RandomUserAgentMiddleware': 543,
+        }
     }
 
     def __init__(self):
         super(MoocSubjectSpider, self).__init__()
+        # 对频道地址做遍历操作，使用self.count计数
         self.base_url = 'https://www.icourse163.org/channel/{}.htm'
         self.count = 1
 

@@ -18,6 +18,7 @@ class MoocPipeline:
 
 class Mysql_Pipeline(object):
     def __init__(self, mysql_host, mysql_db, mysql_user, mysql_passwd):
+        # 建立Mysql连接和创建游标
         self.connect = pymysql.connect(
             host=mysql_host,
             db=mysql_db,
@@ -28,6 +29,7 @@ class Mysql_Pipeline(object):
 
     @classmethod
     def from_crawler(cls, crawler):
+        # 从settings中获取Mysql配置信息
         return cls(
             mysql_host=crawler.settings.get('MYSQL_HOST'),
             mysql_db=crawler.settings.get('MYSQL_DBNAME'),
@@ -36,16 +38,12 @@ class Mysql_Pipeline(object):
         )
 
     def process_item(self, item, spider):
+        # 存储数据至Mysql
         data = dict(item)
         keys = ', '.join(data.keys())
         values = ', '.join(['%s'] * len(data))
-        # print(data)
         sql = 'insert into %s (%s) values(%s)' % (item.table, keys, values)
-        # print(data)
-        # print(sql % tuple(data.values()))
-        # sql = "INSERT INTO quotes_spider(author,tags,text) VALUES(%s,%s,%s)"
         try:
-            # if self.cursor.execute(sql, (item['author'], ",".join(item['tags']), item['text'])):
             if self.cursor.execute(sql, tuple(data.values())):
                 self.connect.commit()
         except DropItem as e:
@@ -56,5 +54,6 @@ class Mysql_Pipeline(object):
         return item
 
     def close_spider(self, spider):
+        # 关闭游标和连接
         self.cursor.close()
         self.connect.close()

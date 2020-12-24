@@ -2,11 +2,16 @@ import scrapy
 import re
 import json
 import datetime
-import pandas as pd
 from MOOC.items import classItem
 
 
 def set_request_body(categoryChannelId=3002, page='1'):
+    """
+    生成request body 供访问接口使用
+    :param categoryChannelId: 学科类别 id
+    :param page: 页数
+    :return: request body 键值对
+    """
     # categoryChannelId=3002 计算机学科
     return {
         'mocCourseQueryVo':
@@ -22,7 +27,10 @@ class MoocInfoSpider(scrapy.Spider):
     custom_settings = {
         'FEED_EXPORT_FIELDS': ['name', 'school', 'subscribe_num', 'endTime', 'startTime', 'teachers', 'courseURL',
                                'subject_type'],
-        'ITEM_PIPELINES': {'MOOC.pipelines.Mysql_Pipeline': 400}
+        'ITEM_PIPELINES': {'MOOC.pipelines.Mysql_Pipeline': 400},
+        'DOWNLOADER_MIDDLEWARES': {
+            'MOOC.middlewares.RandomUserAgentMiddleware': 543,
+        }
     }
 
     def __init__(self, channelId=42, channelName='Unknown'):
@@ -43,7 +51,6 @@ class MoocInfoSpider(scrapy.Spider):
             'Connection': 'keep-alive',
             # 'Content-Length': '112',
             'edu-script-token': re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0],
-            # TODO: Download Middleware process_response() 实现随机User-Agent
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36 Edg/87.0.664.41',
             'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
             'Accept': '*/*',
@@ -60,15 +67,17 @@ class MoocInfoSpider(scrapy.Spider):
                            re.findall("NTESSTUDYSI=(.*?);", self.cookie)[0]
 
     def start_requests(self):
+        # 向接口发送指定post请求
         yield scrapy.FormRequest(url=self.search_ajax, method='POST', headers=self.request_header,
                                  meta={'dont_merge_cookies': True},
                                  formdata=self.request_body,
                                  callback=self.parse)
 
     def parse(self, response, **kwargs):
-        # print(response.text)
+        """
+        读取接口json数据并解析
+        """
         info_dict = json.loads(response.text)
-        # print(info_dict)
         # *****************************当前页数信息*****************************
         # 当前页数：pageIndex    单页课程数量：pageSize     总页数：totalPageCount
         pageIndex = info_dict['result']['query']['pageIndex']
@@ -81,13 +90,14 @@ class MoocInfoSpider(scrapy.Spider):
         # 课程名称  学校  参加人数    开课时间/结束时间    教师  链接
         for num in range(0, len(info_dict['result']['list'])):
             json_list = info_dict['result']['list'][num]
+            # 忽略缺少相关信息的课程，此类课程多为广告和培训班
             if json_list['mocCourseBaseCardVo'] is None:
                 continue
             name = json_list['mocCourseBaseCardVo']['name']
             school = json_list['mocCourseBaseCardVo']['schoolName']
             subscribe_num = json_list['mocCourseBaseCardVo']['enrollCount']
+            # 选课人数空值处理
             if not isinstance(subscribe_num, int):
-                print('isdigit', subscribe_num)
                 subscribe_num = 0
             endTime = json_list['mocCourseBaseCardVo']['endTime']
             startTime = json_list['mocCourseBaseCardVo']['startTime']
@@ -110,7 +120,7 @@ class MoocInfoSpider(scrapy.Spider):
             item['subject_type'] = self.channelName
             yield item
         if nextPage <= totalPageCount:
-            # print('下一页： ', nextPage)
+            # 通过修改request body内页面数据，实现翻页效果
             yield scrapy.FormRequest(url=self.search_ajax, method='POST', headers=self.request_header,
                                      meta={'dont_merge_cookies': True},
                                      formdata=set_request_body(categoryChannelId=self.channelId, page=nextPage),

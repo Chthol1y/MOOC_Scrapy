@@ -19,7 +19,7 @@ app = dash.Dash(__name__, external_stylesheets=[
 
 
 # ---------------read data---------------
-def read_subject_all_class(subject_name):
+def subject_all_class(subject_name):
     """
     读取指定学科的学校开课排名
     :param subject_name: 学科名, source from subject_id.csv
@@ -31,7 +31,7 @@ def read_subject_all_class(subject_name):
     source_X = list(source.index)
     source_Y = list(map(int, list(source.values)))
     df = pd.DataFrame({'x': source_X, 'y': source_Y})
-    return df  # , source_X, source_Y
+    return df
 
 
 subject_dict = pd.read_csv('subject_id.csv').set_index('subject_name')['subject_id'].to_dict()
@@ -162,7 +162,7 @@ app.layout = html.Div(children=[
 )
 # TODO 点击条形图跳转至课程
 def update_figure(selected_value):
-    figure_df = read_subject_all_class(subjectName_list[selected_value])
+    figure_df = subject_all_class(subjectName_list[selected_value])
     fig = px.bar(figure_df, x='x', y='y', labels={'x': '', 'y': 'Y：开课数量'})
     fig.update_layout(transition_duration=1)
     return fig
@@ -170,4 +170,5 @@ def update_figure(selected_value):
 
 # ---------------Run Server---------------
 if __name__ == '__main__':
-    app.run_server(host='10.18.44.11', debug=True)
+    app.run_server(debug=True)
+    # app.run_server(host='10.18.44.11', debug=True)
