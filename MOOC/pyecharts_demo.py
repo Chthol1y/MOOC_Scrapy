@@ -10,6 +10,7 @@ import pandas as pd
 import pymysql
 from pyecharts import options as opts
 from pyecharts.charts import Bar, Grid, Page, Pie, WordCloud
+from pyecharts.globals import ThemeType
 
 import MOOC.settings as settings
 from app import subject_all_class
@@ -23,9 +24,9 @@ mysql_connection = pymysql.connect(host=settings.MYSQL_HOST,
 
 sql = "SELECT * FROM class_info"
 sql_df = pd.read_sql(sql, mysql_connection)
-sort_by_num = sql_df.sort_values(by='subscribe_num', ascending=False).reset_index()
+sort_by_num = sql_df.sort_values(by='subscribeNum', ascending=False).reset_index()
 sort_by_num['school&name'] = sort_by_num['school'] + '-' + sort_by_num['name']
-sort_by_num['subscribe_num'] = list(map(int, list(sort_by_num['subscribe_num'])))
+sort_by_num['subscribeNum'] = list(map(int, list(sort_by_num['subscribeNum'])))
 
 # 选择选课人数排名前25的课程
 sort_by_num = sort_by_num.head(25)
@@ -45,9 +46,9 @@ for i in range(len(stopwords)):
 # 选择选课人数排名前25柱状图
 def course_selection_ranking() -> Grid:
     c = (
-        Bar()
+        Bar(init_opts=opts.InitOpts(width="40%", theme=ThemeType.LIGHT))
         .add_xaxis(list(sort_by_num['school&name']))
-        .add_yaxis('', list(sort_by_num['subscribe_num']))
+        .add_yaxis('', list(sort_by_num['subscribeNum']))
         .reversal_axis()
         .set_series_opts(label_opts=opts.LabelOpts(position="right"))
         .set_global_opts(
@@ -56,7 +57,7 @@ def course_selection_ranking() -> Grid:
         )
     )
     g = (
-        Grid()
+        Grid(init_opts=opts.InitOpts(width="40%", theme=ThemeType.LIGHT))
         .add(c, grid_opts=opts.GridOpts(pos_left="250"))
     )
     return g
@@ -66,7 +67,7 @@ def add_bar():
     bar_list = []
     for name in subjectName_list:
         df = subject_all_class(name)
-        bar = Bar()
+        bar = Bar(init_opts=opts.InitOpts(width="40%", theme=ThemeType.LIGHT))
         bar.add_xaxis(list(df['x']))
         bar.add_yaxis('开课数量', list(df['y']))
         bar.set_global_opts(
@@ -83,13 +84,13 @@ def class_sum_by_subject() -> Bar:
 
 # 各学科课程占比饼状图
 def subject_pie() -> Pie:
-    # sql_df['subject_type']
-    subject_type_sum = sql_df['subject_type'].value_counts()
-    subject_num = list(subject_type_sum)
-    subject_name = list(subject_type_sum.index)
+    # sql_df['subjectType']
+    subjectType_sum = sql_df['subjectType'].value_counts()
+    subject_num = list(subjectType_sum)
+    subject_name = list(subjectType_sum.index)
     pie_data = [list(z) for z in zip(subject_name, subject_num)]
     p = (
-        Pie()
+        Pie(init_opts=opts.InitOpts(width="40%", theme=ThemeType.LIGHT))
         .add(
             "课程数量",
             pie_data,
@@ -117,7 +118,7 @@ def word_cloud() -> WordCloud:
             input_list.append((item, str(np.sum(total_seg == item))))
 
     c = (
-        WordCloud()
+        WordCloud(init_opts=opts.InitOpts(width="40%", theme=ThemeType.LIGHT))
         .add("词云分析", input_list)
         .set_global_opts(
             title_opts=opts.TitleOpts(
@@ -138,6 +139,7 @@ def page_simple_layout():
         subject_pie(),
         word_cloud(),
     )
+    page.page_title = "MOOC当前开放课程可视化"
     page.render("当前全部开放课程可视化.html")
 
 

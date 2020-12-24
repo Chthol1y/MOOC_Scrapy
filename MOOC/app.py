@@ -52,9 +52,9 @@ mysql_connection = pymysql.connect(host=settings.MYSQL_HOST,
 
 sql = "SELECT * FROM class_info"
 sql_df = pd.read_sql(sql, mysql_connection)
-sort_by_num = sql_df.sort_values(by='subscribe_num', ascending=False).reset_index()
+sort_by_num = sql_df.sort_values(by='subscribeNum', ascending=False).reset_index()
 sort_by_num['school&name'] = sort_by_num['school'] + '-' + sort_by_num['name']
-sort_by_num['subscribe_num'] = list(map(int, list(sort_by_num['subscribe_num'])))
+sort_by_num['subscribeNum'] = list(map(int, list(sort_by_num['subscribeNum'])))
 # select top 50 class for the Figure 1
 sort_by_num = sort_by_num.head(50)
 mysql_connection.close()
@@ -67,8 +67,8 @@ colors = {
 
 # ---------------App layout---------------
 # vertical bar fig of Figure 1
-vertical_bar_fig = px.bar(sort_by_num, x=list(sort_by_num['subscribe_num']), y=list(sort_by_num['school&name']),
-                          hover_data=['teachers', 'school', 'courseURL', 'subject_type'],
+vertical_bar_fig = px.bar(sort_by_num, x=list(sort_by_num['subscribeNum']), y=list(sort_by_num['school&name']),
+                          hover_data=['teachers', 'school', 'courseURL', 'subjectType'],
                           labels={'x': 'X：参与人数', 'y': ''},
                           orientation='h')
 vertical_bar_fig.update_layout(
@@ -110,7 +110,7 @@ figure_2 = html.Div(id='university_class_sum_by_subject_',
 figure_3 = html.Div(id='subject_percentage_figure',
                     children=[
                         dcc.Graph(
-                            figure=px.pie(sql_df, names='subject_type'), style={'height': 555})
+                            figure=px.pie(sql_df, names='subjectType'), style={'height': 555})
                     ])
 
 # HTML start
