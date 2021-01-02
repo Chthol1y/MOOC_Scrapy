@@ -117,7 +117,6 @@ figure_3 = html.Div(id='subject_percentage_figure',
 app.layout = html.Div(children=[
     navbar,
     html.H1("基于dash plotly与bootstrap的爬虫数据可视化", style={'text-align': 'center'}),
-    html.H5("093118120 肖利东", style={'text-align': 'center'}),
     html.Br(),
     dbc.Row([
         dbc.Col([html.P(children=['选课人数排名'])], width={'size': 3, 'offset': 2}),
