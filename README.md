@@ -10,7 +10,7 @@
 可视化试了 **[Dash]** 和 **[pyecharts]**，都各有各的优缺点，dash的页面写的真的很戳
 （当时还没学完web基础！）数据分析意义其实感觉不是很大，尽量多花了几张图熟悉库操作而已。
 
-**ps** ：cookie文内容如失效请自行替换
+**ps** ：cookie文件内容如失效请自行替换
 
 [Dash]: https://dash.plotly.com/
 [pyecharts]: https://pyecharts.org/
