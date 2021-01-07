@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>评分人数2000人以上的课程评分排名</title>
+            <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+
+</head>
+<body>
+    <div id="bc3b59f7d16c4ac0bcdd1847d1eebb77" class="chart-container" style="width:500px; height:700px;"></div>
+    <script>
+        var chart_bc3b59f7d16c4ac0bcdd1847d1eebb77 = echarts.init(
+            document.getElementById('bc3b59f7d16c4ac0bcdd1847d1eebb77'), 'light', {renderer: 'canvas'});
+        var option_bc3b59f7d16c4ac0bcdd1847d1eebb77 = {
+    "animation": true,
+    "animationThreshold": 2000,
+    "animationDuration": 1000,
+    "animationEasing": "cubicOut",
+    "animationDelay": 0,
+    "animationDurationUpdate": 300,
+    "animationEasingUpdate": "cubicOut",
+    "animationDelayUpdate": 0,
+    "series": [
+        {
+            "type": "bar",
+            "legendHoverLink": true,
+            "data": [
+                "4.988464",
+                "4.987638",
+                "4.973059",
+                "4.951414",
+                "4.949829",
+                "4.921707",
+                "4.912677",
+                "4.884426",
+                "4.880884",
+                "4.871951",
+                "4.857389",
+                "4.856573",
+                "4.851714",
+                "4.849684",
+                "4.843956",
+                "4.835709",
+                "4.825951",
+                "4.824643",
+                "4.824387",
+                "4.823925",
+                "4.821971",
+                "4.8213",
+                "4.816847",
+                "4.812261",
+                "4.810434",
+                "4.810129",
+                "4.809049",
+                "4.808929",
+                "4.80121",
+                "4.79909"
+            ],
+            "showBackground": false,
+            "barMinHeight": 0,
+            "barCategoryGap": "20%",
+            "barGap": "30%",
+            "large": false,
+            "largeThreshold": 400,
+            "seriesLayoutBy": "column",
+            "datasetIndex": 0,
+            "clip": true,
+            "zlevel": 0,
+            "z": 2,
+            "label": {
+                "show": true,
+                "position": "top",
+                "margin": 8
+            },
+            "tooltip": {
+                "show": true,
+                "trigger": "item",
+                "triggerOn": "mousemove|click",
+                "axisPointer": {
+                    "type": "line"
+                },
+                "showContent": true,
+                "alwaysShowContent": false,
+                "showDelay": 0,
+                "hideDelay": 100,
+                "formatter": function(param) { return [                                       '\u5b66\u6821&\u8bfe\u7a0b\u540d '  + ': ' + param.name,                                       '\u8bc4\u5206: ' + param.data,                                   ].join('<br/>') },
+                "textStyle": {
+                    "fontSize": 14
+                },
+                "borderWidth": 0,
+                "padding": 5
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                ""
+            ],
+            "selected": {
+                "": true
+            },
+            "show": true,
+            "padding": 5,
+            "itemGap": 10,
+            "itemWidth": 25,
+            "itemHeight": 14
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "showContent": true,
+        "alwaysShowContent": false,
+        "showDelay": 0,
+        "hideDelay": 100,
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0,
+        "padding": 5
+    },
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "offset": 0,
+            "splitNumber": 5,
+            "minInterval": 0,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "show": true,
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "yAxis": [
+        {
+            "show": false,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": true,
+            "offset": 0,
+            "splitNumber": 5,
+            "minInterval": 0,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "show": true,
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "\u897f\u5357\u4ea4\u901a\u5927\u5b66-\u571f\u6728\u5de5\u7a0b\u8bd5\u9a8c\u4e0e\u91cf\u6d4b\u6280\u672f",
+                "\u4e2d\u5357\u8d22\u7ecf\u653f\u6cd5\u5927\u5b66-\u7eff\u8272\u521b\u65b0\u7ba1\u7406",
+                "\u4e2d\u5357\u8d22\u7ecf\u653f\u6cd5\u5927\u5b66-\u4ee5\u6848\u8bf4\u6cd5",
+                "\u6c5f\u897f\u8d22\u7ecf\u5927\u5b66-\u5f71\u89c6\u9274\u8d4f",
+                "\u5e7f\u897f\u5927\u5b66-\u6728\u4e0e\u4eba\u7c7b\u6587\u660e",
+                "\u66a8\u5357\u5927\u5b66-\u751f\u6d3b\u4e2d\u7684\u8d27\u5e01\u65f6\u95f4\u4ef7\u503c",
+                "\u534e\u5357\u7406\u5de5\u5927\u5b66-\u5f62\u4f53\u4e0e\u5f62\u8c61\u5851\u9020",
+                "\u4e2d\u56fd\u79d1\u5b66\u6280\u672f\u5927\u5b66-\u6587\u732e\u7ba1\u7406\u4e0e\u4fe1\u606f\u5206\u6790",
+                "\u6d59\u6c5f\u5927\u5b66-\u96f6\u57fa\u7840\u5b66Java\u8bed\u8a00",
+                "\u5317\u4eac\u5927\u5b66-\u4f1a\u8ba1\u5b66\u57fa\u7840",
+                "\u4e2d\u5357\u8d22\u7ecf\u653f\u6cd5\u5927\u5b66-\u521b\u4e1a\u57fa\u7840",
+                "\u6d59\u6c5f\u5927\u5b66-\u7a0b\u5e8f\u8bbe\u8ba1\u5165\u95e8\u2014\u2014C\u8bed\u8a00",
+                "\u6d59\u6c5f\u5927\u5b66-\u535a\u5f08\u8bba\u57fa\u7840",
+                "\u5317\u4eac\u5927\u5b66-\u4eba\u5de5\u667a\u80fd\u5b9e\u8df5\uff1aTensorflow\u7b14\u8bb0",
+                "\u6b66\u6c49\u7406\u5de5\u5927\u5b66-\u6bdb\u6cfd\u4e1c\u601d\u60f3\u548c\u4e2d\u56fd\u7279\u8272\u793e\u4f1a\u4e3b\u4e49\u7406\u8bba\u4f53\u7cfb\u6982\u8bba",
+                "\u5317\u4eac\u7406\u5de5\u5927\u5b66-Python\u8bed\u8a00\u7a0b\u5e8f\u8bbe\u8ba1",
+                "\u5357\u4eac\u5927\u5b66-\u8d70\u8fdb\u521b\u4e1a",
+                "\u6e56\u5357\u5927\u5b66-\u56fd\u9645\u4ea4\u6d41\u5b66\u672f\u82f1\u6587\u5199\u4f5c",
+                "\u6e56\u5357\u5927\u5b66-\u73b0\u4ee3\u793c\u4eea",
+                "\u5317\u4eac\u7406\u5de5\u5927\u5b66-Python\u7f51\u7edc\u722c\u866b\u4e0e\u4fe1\u606f\u63d0\u53d6",
+                "\u6cb3\u5317\u79d1\u6280\u5927\u5b66-\u9a6c\u514b\u601d\u4e3b\u4e49\u57fa\u672c\u539f\u7406\u6982\u8bba",
+                "\u5357\u4eac\u5927\u5b66-\u5fc3\u7406\u54a8\u8be2\u7684\u7406\u8bba\u4e0e\u65b9\u6cd5\uff1a\u4f1a\u8c08\u6280\u5de7",
+                "\u6b66\u6c49\u7406\u5de5\u5927\u5b66-\u7231\u60c5\u5fc3\u7406\u5b66",
+                "\u6c5f\u897f\u8d22\u7ecf\u5927\u5b66-\u6bdb\u6cfd\u4e1c\u601d\u60f3\u548c\u4e2d\u56fd\u7279\u8272\u793e\u4f1a\u4e3b\u4e49\u7406\u8bba\u4f53\u7cfb\u6982\u8bba",
+                "\u5929\u6d25\u5e08\u8303\u5927\u5b66-\u4e2d\u5b66\u5730\u7406\u6559\u5b66\u8bbe\u8ba1",
+                "\u5317\u4eac\u79d1\u6280\u5927\u5b66-\u5f62\u52bf\u4e0e\u653f\u7b56",
+                "\u66a8\u5357\u5927\u5b66-\u521b\u4e1a\u57fa\u7840",
+                "\u798f\u5efa\u5e08\u8303\u5927\u5b66-\u8d70\u8fdb\u6027\u79d1\u5b66",
+                "\u6e56\u5357\u5927\u5b66-\u56fd\u9645\u4ea4\u6d41\u5b9e\u7528\u82f1\u6587\u5199\u4f5c",
+                "\u9996\u90fd\u5e08\u8303\u5927\u5b66-\u6559\u5e08\u4fe1\u606f\u6280\u672f\u5e94\u7528\u80fd\u529b\u63d0\u5347"
+            ]
+        }
+    ],
+    "title": [
+        {
+            "text": "\u8bc4\u5206\u4eba\u65702000\u4eba\u4ee5\u4e0a\u7684\u8bfe\u7a0b\u8bc4\u5206\u6392\u540d(\u9f20\u6807\u60ac\u6d6e\u663e\u793a\u8bfe\u7a0b\u4fe1\u606f)",
+            "padding": 5,
+            "itemGap": 10
+        }
+    ],
+    "toolbox": {
+        "show": false,
+        "orient": "horizontal",
+        "itemSize": 15,
+        "itemGap": 10,
+        "left": "80%",
+        "feature": {
+            "saveAsImage": {
+                "type": "png",
+                "backgroundColor": "auto",
+                "connectedBackgroundColor": "#fff",
+                "show": true,
+                "title": "\u4fdd\u5b58\u4e3a\u56fe\u7247",
+                "pixelRatio": 1
+            },
+            "restore": {
+                "show": true,
+                "title": "\u8fd8\u539f"
+            },
+            "dataView": {
+                "show": true,
+                "title": "\u6570\u636e\u89c6\u56fe",
+                "readOnly": false,
+                "lang": [
+                    "\u6570\u636e\u89c6\u56fe",
+                    "\u5173\u95ed",
+                    "\u5237\u65b0"
+                ],
+                "backgroundColor": "#fff",
+                "textareaColor": "#fff",
+                "textareaBorderColor": "#333",
+                "textColor": "#000",
+                "buttonColor": "#c23531",
+                "buttonTextColor": "#fff"
+            },
+            "dataZoom": {
+                "show": true,
+                "title": {
+                    "zoom": "\u533a\u57df\u7f29\u653e",
+                    "back": "\u533a\u57df\u7f29\u653e\u8fd8\u539f"
+                },
+                "icon": {},
+                "xAxisIndex": false,
+                "yAxisIndex": false,
+                "filterMode": "filter"
+            },
+            "magicType": {
+                "show": true,
+                "type": [
+                    "line",
+                    "bar",
+                    "stack",
+                    "tiled"
+                ],
+                "title": {
+                    "line": "\u5207\u6362\u4e3a\u6298\u7ebf\u56fe",
+                    "bar": "\u5207\u6362\u4e3a\u67f1\u72b6\u56fe",
+                    "stack": "\u5207\u6362\u4e3a\u5806\u53e0",
+                    "tiled": "\u5207\u6362\u4e3a\u5e73\u94fa"
+                },
+                "icon": {}
+            },
+            "brush": {
+                "icon": {},
+                "title": {
+                    "rect": "\u77e9\u5f62\u9009\u62e9",
+                    "polygon": "\u5708\u9009",
+                    "lineX": "\u6a2a\u5411\u9009\u62e9",
+                    "lineY": "\u7eb5\u5411\u9009\u62e9",
+                    "keep": "\u4fdd\u6301\u9009\u62e9",
+                    "clear": "\u6e05\u9664\u9009\u62e9"
+                }
+            }
+        }
+    },
+    "dataZoom": {
+        "show": true,
+        "type": "slider",
+        "realtime": true,
+        "start": 94,
+        "end": 100,
+        "orient": "horizontal",
+        "zoomLock": true,
+        "filterMode": "filter"
+    }
+};
+        chart_bc3b59f7d16c4ac0bcdd1847d1eebb77.setOption(option_bc3b59f7d16c4ac0bcdd1847d1eebb77);
+    </script>
+</body>
+</html>
