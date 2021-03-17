@@ -12,7 +12,6 @@
 
 **ps** ：cookie文件内容如失效请自行替换
 
-![image](https://github.com/Chthol1y/MOOC_Scrapy/blob/master/img/img1.jpg)
 ![image](https://github.com/Chthol1y/MOOC_Scrapy/blob/master/img/img2.png)
 
 [Dash]: https://dash.plotly.com/
